@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import Header from './components/Header'
 import SearchToolbar from './components/SearchToolbar'
 import RepoCard from './components/RepoCard'
+import Toast from './components/Toast'
 import './App.css'
 
 const REGION_NAMES = {
@@ -20,6 +21,7 @@ export default function App() {
   const [error, setError] = useState(null)
   const [keyword, setKeyword] = useState('')
   const [activeRegion, setActiveRegion] = useState('')
+  const [toast, setToast] = useState({ visible: false, message: '' })
 
   const fetchImages = useCallback(async () => {
     setLoading(true)
@@ -38,10 +40,16 @@ export default function App() {
 
   useEffect(() => { fetchImages() }, [fetchImages])
 
-  // 获取所有地域列表
+  const handleCopy = useCallback((cmd) => {
+    setToast({ visible: true, message: '已复制到剪贴板' })
+  }, [])
+
+  const hideToast = useCallback(() => {
+    setToast(t => ({ ...t, visible: false }))
+  }, [])
+
   const regions = [...new Set(images.map(i => i.region))]
 
-  // 过滤
   const filtered = images.filter(item => {
     if (item.error && !item.repo) return false
     if (activeRegion && item.region !== activeRegion) return false
@@ -49,7 +57,6 @@ export default function App() {
     return true
   })
 
-  // 按地域分组
   const grouped = {}
   for (const item of filtered) {
     if (!grouped[item.region]) grouped[item.region] = []
@@ -99,6 +106,7 @@ export default function App() {
                     key={`${region}-${repo.repo}-${i}`}
                     repo={repo}
                     registry={`registry.${region}.aliyuncs.com`}
+                    onCopy={handleCopy}
                   />
                 ))}
               </div>
@@ -109,6 +117,7 @@ export default function App() {
       <div className="footer">
         Docker Registry V2 API · Powered by ESA Pages
       </div>
+      <Toast visible={toast.visible} message={toast.message} onHide={hideToast} />
     </div>
   )
 }

@@ -210,6 +210,12 @@ body {
   color: var(--tag-active-text);
   border-color: var(--tag-active-bg);
 }
+.tag-more {
+  background: transparent;
+  border-style: dashed;
+  color: var(--text2);
+  font-family: inherit;
+}
 
 /* Pull Command */
 .pull-cmd {
@@ -280,6 +286,33 @@ body {
   font-size: 11px;
   border-top: 1px solid var(--border);
   margin-top: 40px;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--text);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 1000;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
 }
 
 @media (max-width: 600px) {
