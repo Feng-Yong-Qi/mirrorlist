@@ -122,6 +122,13 @@ async function fetchAllImages() {
 
 export default {
   async fetch(request) {
+    const url = new URL(request.url);
+
+    // 只处理 /api/images 路径
+    if (url.pathname !== "/api/images") {
+      return new Response(null, { status: 404 });
+    }
+
     if (request.method !== "GET") {
       return new Response(null, { status: 405 });
     }

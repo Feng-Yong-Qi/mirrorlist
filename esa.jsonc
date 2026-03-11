@@ -1,5 +1,6 @@
 {
   "name": "mirrorlist",
+  "entry": "./edge-functions/api/images.js",
   "installCommand": "npm install",
   "buildCommand": "npm run build",
   "assets": {
