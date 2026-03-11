@@ -1,0 +1,5 @@
+{
+  "acr-mirror": {
+    "config": "{\"username\":\"your_username\",\"password\":\"your_password\",\"repos\":{\"cn-zhangjiakou\":[\"merma/nginx\",\"merma/redis\"],\"cn-beijing\":[\"merma/nginx\",\"merma/redis\"]}}"
+  }
+}
