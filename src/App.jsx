@@ -56,10 +56,20 @@ export default function App() {
     setLoading(true)
     setError(null)
     try {
-      const resp = await fetch('/api/images')
-      const text = await resp.text()
-      if (!resp.ok) throw new Error(`HTTP ${resp.status}: ${text}`)
-      setImages(JSON.parse(text))
+      // 第一步：获取仓库列表（读 KV，秒回）
+      const listResp = await fetch('/api/images')
+      if (!listResp.ok) throw new Error(`HTTP ${listResp.status}`)
+      const repoList = await listResp.json()
+
+      // 第二步：浏览器并行请求每个仓库的 tags
+      const tagResults = await Promise.all(
+        repoList.map(({ region, repo }) =>
+          fetch(`/api/tags?region=${encodeURIComponent(region)}&repo=${encodeURIComponent(repo)}`)
+            .then(r => r.json())
+            .catch(() => ({ region, repo, tags: [] }))
+        )
+      )
+      setImages(tagResults)
       if (isManual) {
         setToast({ visible: true, message: '列表已刷新' })
       }
