@@ -61,15 +61,22 @@ export default function App() {
       if (!listResp.ok) throw new Error(`HTTP ${listResp.status}`)
       const repoList = await listResp.json()
 
-      // 第二步：浏览器并行请求每个仓库的 tags
+      // 第二步：按仓库名去重，相同镜像只请求一次 tags
+      const uniqueRepos = {}
+      repoList.forEach(({ region, repo }) => {
+        if (!uniqueRepos[repo]) uniqueRepos[repo] = []
+        uniqueRepos[repo].push(region)
+      })
+
       const tagResults = await Promise.all(
-        repoList.map(({ region, repo }) =>
-          fetch(`/api/tags?region=${encodeURIComponent(region)}&repo=${encodeURIComponent(repo)}`)
+        Object.entries(uniqueRepos).map(([repo, regions]) =>
+          fetch(`/api/tags?region=${encodeURIComponent(regions[0])}&repo=${encodeURIComponent(repo)}`)
             .then(r => r.json())
-            .catch(() => ({ region, repo, tags: [] }))
+            .then(data => regions.map(region => ({ region, repo, tags: data.tags || [] })))
+            .catch(() => regions.map(region => ({ region, repo, tags: [] })))
         )
       )
-      setImages(tagResults)
+      setImages(tagResults.flat())
       if (isManual) {
         setToast({ visible: true, message: '列表已刷新' })
       }
